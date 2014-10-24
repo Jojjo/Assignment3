@@ -1,5 +1,11 @@
-<?php foreach($images as $image): ?>
+<script type="text/javascript" src="http://apps.pixlr.com/lib/pixlr.js"></script>
 
-    <img src="<?php echo $image; ?>"/>
+<?php 
+echo $this->Html->script('pixlr');
 
-<?php endforeach; ?>
+foreach($images as $image){
+	echo "<img id='image' src='".$image."'/>";
+}
+
+
+?>
