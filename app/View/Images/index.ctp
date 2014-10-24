@@ -43,7 +43,7 @@
 <div class="actions">
 	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
-		<li><?php echo $this->Html->link(__('New Image'), array('action' => 'add')); ?></li>
+		<li><?php echo $this->Html->link(__('View Images'), array('controller' => 'images', 'action' => 'display_images')); ?></li>
 		<li><?php echo $this->Html->link(__('List Users'), array('controller' => 'users', 'action' => 'index')); ?> </li>
 		<li><?php echo $this->Html->link(__('New User'), array('controller' => 'users', 'action' => 'add')); ?> </li>
 	</ul>

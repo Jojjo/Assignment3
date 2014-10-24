@@ -17,7 +17,7 @@
  * @since         CakePHP(tm) v 0.2.9
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-    Configure::write('Auth.enabled',  false);
+    Configure::write('Auth.enabled',  true);
     Configure::write('Domain.app',    'mlearn4web');
     Configure::write('Domain.base',   'celtest1.lnu.se:3030');
 /**
