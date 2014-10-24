@@ -67,11 +67,11 @@ class DATABASE_CONFIG {
 	public $default = array(
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,
-		'port' => 8889,
+		//'port' => 8889,
 		'host' => '127.0.0.1',
-		'login' => 'root',
-		'password' => 'root',
-		'database' => 'assignment3',
+		'login' => 'schmidtj',
+		'password' => 'nanilgEajDagEbs',
+		'database' => 'schmidtj_assignment3',
 		'prefix' => '',
 		//'encoding' => 'utf8',
 	);

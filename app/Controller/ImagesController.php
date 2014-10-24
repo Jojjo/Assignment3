@@ -38,7 +38,7 @@ class ImagesController extends AppController {
 
     public function display_images()
     {
-        // Get all scenarios
+        // Get all data from all scenarios
         $allData = $this->_executeGetRequest('getalldata');
 
         // Create an empty array to hold our image paths
@@ -51,13 +51,13 @@ class ImagesController extends AppController {
             foreach($allData as $item)
             {
                 // If we have a \'screen1\' object then examine it
-                if ($item->data->screen1)
+                if(isset($item->data->screen1))
                 {
                     // Go through each attribute of the \'screen1\' object
                     foreach($item->data->screen1 as $element)
                     {
-                        // Verify we have an image type
-                        if($element->type == 'image')
+                        // Verify we have an object with image type
+                        if(is_object($element) and $element->type == 'image')
                         {
                             // Double check we have an extension
                             if($this->verifyExtension($element->value))
