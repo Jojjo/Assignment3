@@ -36,7 +36,7 @@ class ImagesController extends AppController {
 
     public function display_scenarios()
     {
-        $allScenarios = $this->_executeGetRequest('getalldata');
+        $allScenarios = $this->_executeGetRequest('getall');
 
 //        debug($allScenarios);
 
@@ -44,26 +44,42 @@ class ImagesController extends AppController {
 
         foreach($allScenarios as $scenario)
         {
-            array_push($scenarios, $scenario->scenarioId);
+            array_push($scenarios, array( 'scenarioId'  => $scenario->_id,
+                                          'title'       => $scenario->title,
+                                          'description' => $scenario->description));
         }
 
-        $this->set('scenarios', array_unique($scenarios));
-    }
-
-    public function proxy($api, $id = null)
-    {
-        $this->layout = 'ajax';
-
-        $resp = $this->_executeGetRequest($api, 'RAW', $id);
-
-        $this->set('response', $resp);
+        $this->set('scenarios', $scenarios);
     }
 
     public function display_scenario($id)
     {
-        $scenario = $this->_executeGetRequest('get', 'JSON', $id);
+        $scenarioDatas = $this->_executeGetRequest('getscenariodata', $id);
+        $images = array();
 
-        debug($scenario);
+        if(!empty($scenarioDatas))
+        {
+            foreach($scenarioDatas as $scenarioData)
+            {
+                if(isset($scenarioData->data))
+                {
+                    foreach($scenarioData->data as $screenKey => $screenValue)
+                    {
+                        foreach($screenValue as $element)
+                        {
+                            if(is_object($element) and $element->type == 'image')
+                            {
+                                if ($this->verifyExtension($element->value))
+                                {
+                                    array_push($images, 'http://' .Configure::read('Domain.base') . $element->value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $this->set('images', $images);
     }
 
     public function display_images()
@@ -123,7 +139,7 @@ class ImagesController extends AppController {
      * @param string $path e.g. the api to call
      * @return bool|mixed
      */
-    public function _executeGetRequest($path = 'getall', $type = 'JSON', $id = null)
+    public function _executeGetRequest($path = 'getall', $id = null)
     {
         App::uses('HttpSocket', 'Network/Http');
         $HttpSocket = new HttpSocket();
@@ -139,7 +155,7 @@ class ImagesController extends AppController {
         if ($response->code != 200)
             return false;
 
-        return ($type == 'JSON' ? json_decode($response['body']) : $response['body']);
+        return json_decode($response['body']);
     }
 
 /**

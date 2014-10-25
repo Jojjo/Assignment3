@@ -4,24 +4,13 @@
 echo $this->Html->script('jquery');
 foreach ($scenarios as $scenario):?>
 
-    <?php echo $this->Html->link($scenario, array('action' => 'display_scenario', $scenario)); ?>
-
     <div>
-        <p><strong id="title_<?php echo $scenario; ?>"></strong></p>
-        <p><strong id="desc_<?php echo $scenario; ?>"></strong></p>
+        <p><?php echo $this->Html->link('(' . $scenario['scenarioId'] .') ' . $scenario['title'], array( 'controller' => 'images', 'action' => 'display_scenario', $scenario['scenarioId'])); ?></p>
+
+
+        <p><strong> </strong><?php echo $scenario['description']; ?></strong></p>
     </div>
 
-    <script type="application/javascript">
-        $.ajax({
-            url: "http://localhost/images/proxy/get/<?php echo $scenario; ?>",
-            cache: false
-        }).done(function (html) {
-            var scenario = jQuery.parseJSON(html)
-            console.log(scenario);
-            $('#title_<?php echo $scenario; ?>').html(scenario.title);
-            $('#desc_<?php echo $scenario; ?>').html(scenario.description);
-        });
-    </script>
 <?php endforeach ?>
 
 
