@@ -32,13 +32,59 @@ class ImagesController extends AppController {
 	public function index() {
 		$this->Image->recursive = 0;
 		$this->set('images', $this->Paginator->paginate());
-
-
 	}
+
+    public function display_scenarios()
+    {
+        $allScenarios = $this->_executeGetRequest('getall');
+
+//        debug($allScenarios);
+
+        $scenarios = array();
+
+        foreach($allScenarios as $scenario)
+        {
+            array_push($scenarios, array( 'scenarioId'  => $scenario->_id,
+                                          'title'       => $scenario->title,
+                                          'description' => $scenario->description));
+        }
+
+        $this->set('scenarios', $scenarios);
+    }
+
+    public function display_scenario($id)
+    {
+        $scenarioDatas = $this->_executeGetRequest('getscenariodata', $id);
+        $images = array();
+
+        if(!empty($scenarioDatas))
+        {
+            foreach($scenarioDatas as $scenarioData)
+            {
+                if(isset($scenarioData->data))
+                {
+                    foreach($scenarioData->data as $screenKey => $screenValue)
+                    {
+                        foreach($screenValue as $element)
+                        {
+                            if(is_object($element) and $element->type == 'image')
+                            {
+                                if ($this->verifyExtension($element->value))
+                                {
+                                    array_push($images, 'http://' .Configure::read('Domain.base') . $element->value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $this->set('images', $images);
+    }
 
     public function display_images()
     {
-        // Get all scenarios
+        // Get all data from all scenarios
         $allData = $this->_executeGetRequest('getalldata');
 
         // Create an empty array to hold our image paths
@@ -51,13 +97,13 @@ class ImagesController extends AppController {
             foreach($allData as $item)
             {
                 // If we have a \'screen1\' object then examine it
-                if ($item->data->screen1)
+                if(isset($item->data->screen1))
                 {
                     // Go through each attribute of the \'screen1\' object
                     foreach($item->data->screen1 as $element)
                     {
-                        // Verify we have an image type
-                        if($element->type == 'image')
+                        // Verify we have an object with image type
+                        if(is_object($element) and $element->type == 'image')
                         {
                             // Double check we have an extension
                             if($this->verifyExtension($element->value))
@@ -93,7 +139,7 @@ class ImagesController extends AppController {
      * @param string $path e.g. the api to call
      * @return bool|mixed
      */
-    public function _executeGetRequest($path = 'getall')
+    public function _executeGetRequest($path = 'getall', $id = null)
     {
         App::uses('HttpSocket', 'Network/Http');
         $HttpSocket = new HttpSocket();
@@ -104,7 +150,7 @@ class ImagesController extends AppController {
                 'scheme' => 'http',
                 'host' => Configure::read('Domain.base') . DIRECTORY_SEPARATOR . Configure::read('Domain.app'),
                 'port' => 80,
-                'path' => $path)));
+                'path' => (isset($id) ? $path . DIRECTORY_SEPARATOR . $id : $path))));
 
         if ($response->code != 200)
             return false;
