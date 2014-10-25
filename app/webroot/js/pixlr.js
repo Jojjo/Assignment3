@@ -11,7 +11,7 @@
  *	@since		Sep 25, 2014
  *	@author		Henrik Andersen <henrik.andersen@lnu.se>
  */
-var Main = (function() {
+var Pixlr = (function() {
 
 	//----------------------------------------------------------------------
 	// Private properties
@@ -82,12 +82,15 @@ var Main = (function() {
 	function onImageClick(event) {
 		pixlr.overlay.show({
 			image: _elmImage.src,
-			title: "Mona-Lisa",
+			title: "Mona-Lisa",	//needs to be changed!
+			referrer: "mLearn4web",
 			method: "GET",
 			target: URL_SAVE_IMAGE,
-			exit: URL_SAVE_IMAGE,
+			exit: "http://schmidtj.spica.uberspace.de/102-A3/images/display_images",
+			// copy: "true", 	//needs to be tested if working with locktarget
 			redirect: "true",
 			locktarget: "true",
+			locktype: "source",
 		});
 	}
 
@@ -98,4 +101,4 @@ var Main = (function() {
 /**
  *	BOOTSTRAP
  */
-window.addEventListener("load", Main.init);
+window.addEventListener("load", Pixlr.init);
