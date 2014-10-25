@@ -17,9 +17,11 @@
  * @since         CakePHP(tm) v 0.2.9
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-    Configure::write('Auth.enabled',  true);
+    Configure::write('Auth.enabled',  false);
     Configure::write('Domain.app',    'mlearn4web');
     Configure::write('Domain.base',   'celtest1.lnu.se:3030');
+    Configure::write('Pixlr.return',  'http://localhost/images/display_scenario/');
+    Configure::write('Pixlr.save',    'http://localhost/images/save_image/');
 /**
  * CakePHP Debug Level:
  *
