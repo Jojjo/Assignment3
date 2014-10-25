@@ -80,6 +80,13 @@ class ImagesController extends AppController {
             }
         }
         $this->set('images', $images);
+        $this->set('scenarioId', $id);
+    }
+
+    public function save_image()
+    {
+        $this->autoRender = false;
+
     }
 
     public function display_images()

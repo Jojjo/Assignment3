@@ -1,10 +1,10 @@
-<?php echo $this->Html->script('pixlr'); ?>
+
 
 <?php if(!empty($images)): ?>
 
     <?php foreach($images as $image): ?>
 
-       <img id='image' src="<?php echo $image ?>"/>
+        <?php echo $this->Html->link($this->Html->image($image), 'javascript:pixlr.edit({image:"' . $image . '", service:"express", target:"' . Configure::read('Pixlr.save') . '", exit:"' . Configure::read('Pixlr.return') . $scenarioId . '"});', array('escape' => false)); ?>
 
     <?php endforeach; ?>
 
