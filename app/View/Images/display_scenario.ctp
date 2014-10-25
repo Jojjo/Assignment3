@@ -1,10 +1,13 @@
-<?php echo $this->Html->script('pixlr'); ?>
+<?php
+	echo $this->Html->script('pixlr');
+	echo $this->Html->css('custom');
+?>
 
 <?php if(!empty($images)): ?>
 
     <?php foreach($images as $image): ?>
 
-       <img id='image' src="<?php echo $image ?>"/>
+       <img class='image' src="<?php echo $image ?>"/>
 
     <?php endforeach; ?>
 
