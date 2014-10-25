@@ -5,8 +5,7 @@ echo $this->Html->script('pixlr');
 echo $this->Html->css('custom');
 
 foreach($images as $image){
-	echo "<img class='image' src='".$image."'/>";
+	echo "<img src='".$image."'/>";
 }
-
 
 ?>
