@@ -32,9 +32,39 @@ class ImagesController extends AppController {
 	public function index() {
 		$this->Image->recursive = 0;
 		$this->set('images', $this->Paginator->paginate());
-
-
 	}
+
+    public function display_scenarios()
+    {
+        $allScenarios = $this->_executeGetRequest('getalldata');
+
+//        debug($allScenarios);
+
+        $scenarios = array();
+
+        foreach($allScenarios as $scenario)
+        {
+            array_push($scenarios, $scenario->scenarioId);
+        }
+
+        $this->set('scenarios', array_unique($scenarios));
+    }
+
+    public function proxy($api, $id = null)
+    {
+        $this->layout = 'ajax';
+
+        $resp = $this->_executeGetRequest($api, 'RAW', $id);
+
+        $this->set('response', $resp);
+    }
+
+    public function display_scenario($id)
+    {
+        $scenario = $this->_executeGetRequest('get', 'JSON', $id);
+
+        debug($scenario);
+    }
 
     public function display_images()
     {
@@ -93,7 +123,7 @@ class ImagesController extends AppController {
      * @param string $path e.g. the api to call
      * @return bool|mixed
      */
-    public function _executeGetRequest($path = 'getall')
+    public function _executeGetRequest($path = 'getall', $type = 'JSON', $id = null)
     {
         App::uses('HttpSocket', 'Network/Http');
         $HttpSocket = new HttpSocket();
@@ -104,12 +134,12 @@ class ImagesController extends AppController {
                 'scheme' => 'http',
                 'host' => Configure::read('Domain.base') . DIRECTORY_SEPARATOR . Configure::read('Domain.app'),
                 'port' => 80,
-                'path' => $path)));
+                'path' => (isset($id) ? $path . DIRECTORY_SEPARATOR . $id : $path))));
 
         if ($response->code != 200)
             return false;
 
-        return json_decode($response['body']);
+        return ($type == 'JSON' ? json_decode($response['body']) : $response['body']);
     }
 
 /**
