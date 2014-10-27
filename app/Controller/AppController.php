@@ -54,7 +54,7 @@ class AppController extends Controller {
         );
         $this->Auth->loginRedirect = array(
             'controller' => 'images',
-            'action' => 'index'
+            'action' => 'display_scenarios'
         );
     }
 }

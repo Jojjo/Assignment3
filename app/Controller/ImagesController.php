@@ -21,8 +21,8 @@ class ImagesController extends AppController {
     {
         parent::beforeFilter();
 
-        if(!Configure::read('Auth.enabled'))
-            $this->Auth->allow();
+        if(Configure::read('Auth.enabled'))
+            $this->Auth->allow('duplicate_image', 'save_image', 'update_item', 'duplicate_item');
     }
 /**
  * index method
@@ -52,10 +52,162 @@ class ImagesController extends AppController {
         $this->set('scenarios', $scenarios);
     }
 
+    public function update_item($imageData, $imageName, $datasetId, $userId)
+    {
+        $this->autoRender = false;
+
+        $dataSet = $this->_executeGetRequest('getdata', $datasetId);
+
+        foreach($dataSet->data as $screenKey => $screen)
+        {
+            $j = 0;
+
+            $tempScreen = $screen;
+
+            foreach($screen as $element)
+            {
+                if(is_object($element) and $element->type == 'image')
+                {
+                    $path = explode('files/', $element->value)[1];
+
+                    if(count($path) > 0 )
+                    {
+                        $img = base64_encode(file_get_contents('http://' . Configure::read('Domain.base') . $tempScreen[$j]->value));
+                        $tempScreen[$j]->value = $img;
+                    }
+
+                    if($imageName === $path)
+                    {
+                        $content = file_get_contents($imageData);
+
+                        $tempScreen[$j]->value     = base64_encode($content);
+                        $tempScreen[$j]->author    = $userId;
+                    }
+                }
+                $j++;
+            }
+            $dataSet->data->$screenKey = $tempScreen;
+        }
+
+        $data = array();
+        $data['data'] = $dataSet->data;
+        $encoded = json_encode($data);
+        $this->_executePutRequest('updatedata', $datasetId, $encoded);
+
+        $this->redirect(array('controller' => 'images', 'action' => 'display_scenario', $dataSet->scenarioId));
+    }
+
+    public function duplicate_item($imageData, $imageName, $datasetId, $userId)
+    {
+        $this->autoRender = false;
+
+        $dataSet = $this->_executeGetRequest('getdata', $datasetId);
+
+        $tempElement = '';
+
+        foreach($dataSet->data as $screenKey => $screen)
+        {
+            $j = 0;
+
+            $tempScreen = $screen;
+
+            foreach($screen as $element)
+            {
+                if(is_object($element) and $element->type == 'image')
+                {
+                    $path = explode('files/', $element->value)[1];
+
+                    if(count($path) > 0 )
+                    {
+                        $img = base64_encode(file_get_contents('http://' . Configure::read('Domain.base') . $tempScreen[$j]->value));
+                        $tempScreen[$j]->value = $img;
+                    }
+
+                    if($imageName === $path)
+                    {
+                        $content = file_get_contents($imageData);
+
+                        $tempElement->value     = base64_encode($content);
+                        $tempElement->elementId = $tempScreen[$j]->elementId . '_' . ($j);
+                        $tempElement->type      = $tempScreen[$j]->type;
+                        $tempElement->author    = $userId;
+
+                        array_push($tempScreen, $tempElement);
+                    }
+                }
+                $j++;
+            }
+            $dataSet->data->$screenKey = $tempScreen;
+        }
+
+        $data = array();
+        $data['data'] = $dataSet->data;
+        $encoded      = json_encode($data);
+        $this->_executePutRequest('updatedata', $datasetId, $encoded);
+
+        $this->redirect(array('controller' => 'images', 'action' => 'display_scenario', $dataSet->scenarioId));
+    }
+
+    public function create_dataset($id)
+    {
+        $this->autoRender = false;
+
+        $content = file_get_contents('http://celtest1.lnu.se:3030/files/24796-lqgwlt.jpg');
+
+        $data = array();
+        $data['groupname'] = 'API_TEST';
+
+//        $data['_id'] = '544d490b3c710bfe6d015293';
+//        $data['scenarioId'] = '544d25543c710bfe6d01528f';
+//        $data['_v'] = '1';
+
+        $data['data'] = array('screen1' => array(array('elementId' => 'ci2', 'type' => 'image', 'value' => base64_encode($content))));
+
+        $encoded = json_encode($data);
+
+        $this->_executePostRequest('newdata', $id, $encoded);
+    }
+
+    public function _executePutRequest($api = 'newdata', $id, $data)
+    {
+        App::uses('HttpSocket', 'Network/Http');
+        $HttpSocket = new HttpSocket();
+
+        $response = $HttpSocket->put('http://' . Configure::read('Domain.base') . DIRECTORY_SEPARATOR .
+                                                 Configure::read('Domain.app')  . DIRECTORY_SEPARATOR .
+                                                 $api . DIRECTORY_SEPARATOR . $id,
+                                     $data,
+                                     array('header' => array(
+                                            'Content-Type' => 'application/json',
+                                     )));
+
+        if ($response->code != 200)
+            return false;
+    }
+
+    public function _executePostRequest($api = 'newdata', $id, $data)
+    {
+        App::uses('HttpSocket', 'Network/Http');
+        $HttpSocket = new HttpSocket();
+
+        $response = $HttpSocket->post('http://' . Configure::read('Domain.base') . DIRECTORY_SEPARATOR .
+            Configure::read('Domain.app')  . DIRECTORY_SEPARATOR .
+            $api . DIRECTORY_SEPARATOR . $id,
+            $data,
+            array('header' => array(
+                'Content-Type' => 'application/json',
+            )));
+
+        if ($response->code != 200)
+            return false;
+    }
+
     public function display_scenario($id)
     {
         $scenarioDatas = $this->_executeGetRequest('getscenariodata', $id);
         $images = array();
+
+        debug($scenarioDatas);
 
         if(!empty($scenarioDatas))
         {
@@ -71,7 +223,18 @@ class ImagesController extends AppController {
                             {
                                 if ($this->verifyExtension($element->value))
                                 {
-                                    array_push($images, 'http://' .Configure::read('Domain.base') . $element->value);
+                                    if(isset($element->author))
+                                    {
+                                        $user = $this->User->find('first', array('conditions' => array('User.id' => $element->author)));
+                                    }
+
+
+                                    debug($user);
+                                    array_push($images, array( 'image' => 'http://' .Configure::read('Domain.base') . $element->value,
+                                                               'datasetId' => $scenarioData->_id,
+                                                               'name' => explode('es/', $element->value)[1],
+                                                               'user' => (isset($user) ? $user : null)));
+                                    $user = null;
                                 }
                             }
                         }
@@ -81,11 +244,23 @@ class ImagesController extends AppController {
         }
         $this->set('images', $images);
         $this->set('scenarioId', $id);
+        $this->set('user', $this->Auth->user('id'));
     }
 
-    public function save_image()
+    public function duplicate_image($imageName, $datasetId, $userId)
     {
         $this->autoRender = false;
+
+        $this->duplicate_item($_REQUEST['image'], $imageName, $datasetId, $userId);
+
+    }
+
+    public function save_image($imageName, $datasetId, $userId)
+    {
+        $this->autoRender = false;
+
+        $this->update_item($_REQUEST['image'], $imageName, $datasetId, $userId);
+
 
     }
 
@@ -94,6 +269,7 @@ class ImagesController extends AppController {
         // Get all data from all scenarios
         $allData = $this->_executeGetRequest('getalldata');
 
+        debug($allData);
         // Create an empty array to hold our image paths
         $images = array();
 
