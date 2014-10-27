@@ -1,6 +1,6 @@
 <?php echo $this->Html->script('pixlr'); ?>
 <?php echo $this->Html->css('custom');   ?>
-<?php echo $this->Html->link('Logout', array('controller' => 'users', 'action' => 'logout'), array('class' => 'logoutLink')); ?>
+<?php echo $this->Html->link('Logout', array('controller' => 'users', 'action' => 'logout')); ?>
 <?php if(!empty($images)):?>
 
     <?php if($auth['Group']['name'] == 'Teachers' || $auth['Group']['name'] == 'Administrators'): ?>

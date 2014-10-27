@@ -1,4 +1,5 @@
 <script type="text/javascript" src="http://apps.pixlr.com/lib/pixlr.js"></script>
+<?php echo $this->Html->link('Logout', array('controller' => 'users', 'action' => 'logout')); ?>
 
 <?php
 echo $this->Html->script('jquery');
