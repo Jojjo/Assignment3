@@ -22,7 +22,7 @@ class ImagesController extends AppController {
         parent::beforeFilter();
 
         if(Configure::read('Auth.enabled'))
-            $this->Auth->allow('duplicate_image', 'save_image', 'update_item', 'duplicate_item');
+            $this->Auth->allow('duplicate_image', 'save_image', 'update_item', 'duplicate_item', 'delete_scenario_datasets');
     }
 /**
  * index method
@@ -76,12 +76,23 @@ class ImagesController extends AppController {
                         $tempScreen[$j]->value = $img;
                     }
 
-                    if($imageName === $path)
-                    {
+                    if($imageName === $path) {
                         $content = file_get_contents($imageData);
 
-                        $tempScreen[$j]->value     = base64_encode($content);
-                        $tempScreen[$j]->author    = $userId;
+                        $tempScreen[$j]->value = base64_encode($content);
+                        $tempScreen[$j]->author = $userId;
+
+                        if (property_exists($tempScreen[$j], 'version')) {
+
+                            if(isset($tempScreen[$j]->version))
+                            {
+                                $tempScreen[$j]->version = ($tempScreen[$j]->version) + 1;
+                            }
+                            else
+                            {
+                                $tempScreen[$j]->version = 1;
+                            }
+                        }
                     }
                 }
                 $j++;
@@ -131,6 +142,7 @@ class ImagesController extends AppController {
                         $tempElement->elementId = $tempScreen[$j]->elementId . '_' . ($j);
                         $tempElement->type      = $tempScreen[$j]->type;
                         $tempElement->author    = $userId;
+                        $tempElement->version   = 0;
 
                         array_push($tempScreen, $tempElement);
                     }
@@ -166,6 +178,9 @@ class ImagesController extends AppController {
         $encoded = json_encode($data);
 
         $this->_executePostRequest('newdata', $id, $encoded);
+
+        $this->redirect(array('controller' => 'images', 'action' => 'display_scenario', $id));
+
     }
 
     public function _executePutRequest($api = 'newdata', $id, $data)
@@ -231,7 +246,8 @@ class ImagesController extends AppController {
                                     array_push($images, array( 'image' => 'http://' .Configure::read('Domain.base') . $element->value,
                                                                'datasetId' => $scenarioData->_id,
                                                                'name' => explode('es/', $element->value)[1],
-                                                               'user' => (isset($user) ? $user : null)));
+                                                               'user' => (isset($user) ? $user : null),
+                                                               'version' => (isset($element->version) ? $element->version : 0)));
                                     $user = null;
                                 }
                             }
@@ -240,9 +256,26 @@ class ImagesController extends AppController {
                 }
             }
         }
+
+        $this->set('auth', $this->User->find('first', array('conditions' => array('User.id' => $this->Auth->user('id')))));
         $this->set('images', $images);
         $this->set('scenarioId', $id);
         $this->set('user', $this->Auth->user('id'));
+    }
+
+    public function delete_scenario_datasets($scenarioId)
+    {
+        $this->autoRender = false;
+        $scenarioDatas = $this->_executeGetRequest('getscenariodata', $scenarioId);
+
+        if(!empty($scenarioDatas))
+        {
+            foreach ($scenarioDatas as $scenarioData)
+            {
+                $this->_executeGetRequest('deletedata', $scenarioData->_id);
+            }
+        }
+        $this->redirect(array('controller' => 'images', 'action' => 'display_scenario', $scenarioId));
     }
 
     public function duplicate_image($imageName, $datasetId, $userId)

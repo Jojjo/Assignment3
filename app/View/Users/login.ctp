@@ -7,3 +7,5 @@
     )); ?>
 <?php    echo $this->Form->end('Login'); ?>
 
+<?php echo $this->Html->link('Register', array('controller' => 'users', 'action' => 'add')); ?>
+

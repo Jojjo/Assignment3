@@ -20,10 +20,10 @@
     Configure::write('Auth.enabled', true);
     Configure::write('Domain.app',    'mlearn4web');
     Configure::write('Domain.base',   'celtest1.lnu.se:3030');
-    Configure::write('Pixlr.return',  'http://schmidtj.spica.uberspace.de/102-A3/images/display_scenario/');
+    Configure::write('Pixlr.return',         'http://schmidtj.spica.uberspace.de/102-A3/images/display_scenario/');
     Configure::write('Pixlr.updateImage',    'http://schmidtj.spica.uberspace.de/102-A3/images/save_image/');
     Configure::write('Pixlr.duplicateImage', 'http://schmidtj.spica.uberspace.de/102-A3/images/duplicate_image/');
-    Configure::write('Pixlr.exit',    'http://schmidtj.spica.uberspace.de/102-A3/images/display_scenario/'); //'http://schmidtj.spica.uberspace.de/102-A3/');
+    Configure::write('Pixlr.exit',           'http://schmidtj.spica.uberspace.de/102-A3/images/display_scenario/');
 /**
  * CakePHP Debug Level:
  *

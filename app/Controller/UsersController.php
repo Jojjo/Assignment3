@@ -21,7 +21,7 @@ class UsersController extends AppController {
         if(!Configure::read('Auth.enabled'))
             $this->Auth->allow();
         else
-            $this->Auth->allow('login', 'logout');
+            $this->Auth->allow('login', 'logout', 'add');
 
     }
     public function initDB() {
