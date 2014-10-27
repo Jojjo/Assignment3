@@ -1,7 +1,9 @@
+@@ -1,101 +1,118 @@
+//--------------------------------------------------------------------------
+// Public static class
+//--------------------------------------------------------------------------
 var pixlr = (function () {
-    /*
-     * IE only, size the size is only used when needed
-     */
+
     function windowSize() {
         var w = 0,
             h = 0;
@@ -18,6 +20,7 @@ var pixlr = (function () {
         };
     }
 
+
     function extend(object, extender) {
         for (var attr in extender) {
             if (extender.hasOwnProperty(attr)) {
@@ -26,6 +29,7 @@ var pixlr = (function () {
         }
         return object;
     }
+
 
     function buildUrl(opt) {
         var url = 'http://pixlr.com/' + opt.service + '/?s=c', attr;
@@ -55,7 +59,7 @@ var pixlr = (function () {
                     div.style.opacity = 0.8;
                     div.style.filter = 'alpha(opacity=80)';
 
-                    if ((bo.ie && bo.quirks) || bo.ie6) {
+                   if ((bo.ie && bo.quirks) || bo.ie6) {
                         var size = windowSize();
                         div.style.position = 'absolute';
                         div.style.width = size.width + 'px';
