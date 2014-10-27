@@ -20,10 +20,10 @@
     Configure::write('Auth.enabled', true);
     Configure::write('Domain.app',    'mlearn4web');
     Configure::write('Domain.base',   'celtest1.lnu.se:3030');
-    Configure::write('Pixlr.return',  'http://localhost/images/display_scenario/');
-    Configure::write('Pixlr.updateImage',    'http://localhost/images/save_image/');
-    Configure::write('Pixlr.duplicateImage', 'http://localhost/images/duplicate_image/');
-    Configure::write('Pixlr.exit',    'http://localhost/images/display_scenario/'); //'http://schmidtj.spica.uberspace.de/102-A3/');
+    Configure::write('Pixlr.return',  'http://schmidtj.spica.uberspace.de/102-A3/images/display_scenario/');
+    Configure::write('Pixlr.updateImage',    'http://schmidtj.spica.uberspace.de/102-A3/images/save_image/');
+    Configure::write('Pixlr.duplicateImage', 'http://schmidtj.spica.uberspace.de/102-A3/images/duplicate_image/');
+    Configure::write('Pixlr.exit',    'http://schmidtj.spica.uberspace.de/102-A3/images/display_scenario/'); //'http://schmidtj.spica.uberspace.de/102-A3/');
 /**
  * CakePHP Debug Level:
  *
@@ -37,7 +37,7 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-	Configure::write('debug', 0);
+	Configure::write('debug', 2);
 
 /**
  * Configure the Error handler used to handle errors for your application. By default

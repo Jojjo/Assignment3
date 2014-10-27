@@ -152,7 +152,7 @@ class ImagesController extends AppController {
     {
         $this->autoRender = false;
 
-        $content = file_get_contents('http://celtest1.lnu.se:3030/files/24796-lqgwlt.jpg');
+        $content = file_get_contents('http://upload.wikimedia.org/wikipedia/en/a/a6/Bender_Rodriguez.png');
 
         $data = array();
         $data['groupname'] = 'API_TEST';
@@ -228,8 +228,6 @@ class ImagesController extends AppController {
                                         $user = $this->User->find('first', array('conditions' => array('User.id' => $element->author)));
                                     }
 
-
-                                    debug($user);
                                     array_push($images, array( 'image' => 'http://' .Configure::read('Domain.base') . $element->value,
                                                                'datasetId' => $scenarioData->_id,
                                                                'name' => explode('es/', $element->value)[1],
